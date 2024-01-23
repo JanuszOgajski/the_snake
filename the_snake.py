@@ -30,7 +30,7 @@ APPLE_COLOR = (255, 0, 0)
 SNAKE_COLOR = (0, 255, 0)
 
 # Скорость движения змейки:
-SPEED = 2
+SPEED = 3
 
 # Настройка игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -97,6 +97,7 @@ class Snake(GameObject):
             self.reset()
         else:
             self.position.insert(0, new_position)
+        # self.position.insert(0, new_position)  # другой вариант
         if len(self.position) > self.length:
             self.position.pop()
         self.last = self.position[-1]
@@ -124,10 +125,10 @@ class Snake(GameObject):
         return self.position[0]
 
     def reset(self):
+        self.length = 2
+        self.position = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
+        self.direction = choice((RIGHT, LEFT, UP, DOWN))
         screen.fill(BOARD_BACKGROUND_COLOR)
-        self.length = 1
-        self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
-        self.direction = choice(RIGHT, LEFT, UP, DOWN)
 
 
 def handle_keys(game_object):
@@ -160,8 +161,8 @@ def main():
         if playable_snake.get_head_position() == game_apple.position:
             playable_snake.length += 1
             game_apple.randomize_position()
-        if playable_snake.get_head_position() in playable_snake.position[1:]:
-            playable_snake.reset()
+        """if playable_snake.get_head_position() in playable_snake.position[1:]:
+            playable_snake.reset()"""
         playable_snake.draw(screen)
         game_apple.draw(screen)
         pygame.display.update()
