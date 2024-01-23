@@ -43,107 +43,7 @@ clock = pygame.time.Clock()
 
 
 # Тут опишите все классы игры.
-class GameObject:
-
-    def __init__(self, body_color, position=[(320, 240)]):
-        self.position = position
-        self.body_color = body_color
-
-    def draw(self):
-
-        pass
-
-
-class Apple(GameObject):
-    def __init__(self, ap_color):
-        super().__init__(ap_color)
-        self.randomize_position()
-
-    def randomize_position(self):
-        self.position = (
-            randint(0, 31) * 20,
-            randint(0, 23) * 20
-        )
-
-    def draw(self, surface):
-        rect = pygame.Rect(
-            (self.position[0], self.position[1]),
-            (GRID_SIZE, GRID_SIZE)
-        )
-        pygame.draw.rect(surface, self.body_color, rect)
-        pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
-
-
-class Snake(GameObject):
-    def __init__(self, sn_color, position=[(320, 240)]):
-        super().__init__(sn_color, position)
-        self.length = 2
-        self.direction = RIGHT
-        self.next_direction = None
-        self.last = None
-
-    def update_direction(self):
-        if self.next_direction:
-            self.direction = self.next_direction
-            self.next_direction = None
-
-    def move(self):
-        head_position = self.get_head_position()
-        new_position = (
-            (head_position[0] + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH,
-            (head_position[1] + self.direction[1] * GRID_SIZE) % SCREEN_HEIGHT
-        )
-        if new_position in self.position[2:]:
-            self.reset()
-        else:
-            self.position.insert(0, new_position)
-        if len(self.position) > self.length:
-            self.position.pop()
-        self.last = self.position[-1]
-
-    def draw(self, surface):
-        for position in self.position[:-1]:
-            rect = (
-                pygame.Rect((position[0], position[1]), (GRID_SIZE, GRID_SIZE))
-            )
-            pygame.draw.rect(surface, self.body_color, rect)
-            pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
-# Отрисовка головы змейки
-        head_rect = pygame.Rect(self.position[0], (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(surface, self.body_color, head_rect)
-        pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
-# Затирание последнего сегмента
-        if self.last:
-            last_rect = pygame.Rect(
-                (self.last[0], self.last[1]),
-                (GRID_SIZE, GRID_SIZE)
-            )
-            pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
-
-    def get_head_position(self):
-        return self.position[0]
-
-    def reset(self):
-        screen.fill(BOARD_BACKGROUND_COLOR)
-        self.length = 1
-        self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
-        self.direction = choice(RIGHT, LEFT, UP, DOWN)
-
-
-def handle_keys(game_object):
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            raise SystemExit
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and game_object.direction != DOWN:
-                game_object.next_direction = UP
-            elif event.key == pygame.K_DOWN and game_object.direction != UP:
-                game_object.next_direction = DOWN
-            elif event.key == pygame.K_LEFT and game_object.direction != RIGHT:
-                game_object.next_direction = LEFT
-            elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
-                game_object.next_direction = RIGHT
+...
 
 
 def main():
@@ -154,17 +54,7 @@ def main():
     while True:
         clock.tick(SPEED)
     # Тут опишите основную логику игры.
-        handle_keys(playable_snake)
-        playable_snake.update_direction()
-        playable_snake.move()
-        if playable_snake.get_head_position() == game_apple.position:
-            playable_snake.length += 1
-            game_apple.randomize_position()
-        if playable_snake.get_head_position() in playable_snake.position[1:]:
-            playable_snake.reset()
-        playable_snake.draw(screen)
-        game_apple.draw(screen)
-        pygame.display.update()
+    # ...
 
 
 if __name__ == '__main__':
