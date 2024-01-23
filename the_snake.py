@@ -77,7 +77,7 @@ class Apple(GameObject):
 class Snake(GameObject):
     def __init__(self, sn_color, position=[(320, 240)]):
         super().__init__(sn_color, position)
-        self.length = 2
+        self.length = 1
         self.direction = RIGHT
         self.next_direction = None
         self.last = None
@@ -97,10 +97,10 @@ class Snake(GameObject):
             self.reset()
         else:
             self.position.insert(0, new_position)
-        # self.position.insert(0, new_position)  # другой вариант
         if len(self.position) > self.length:
+            self.last = self.position[-1]
             self.position.pop()
-        self.last = self.position[-1]
+        """self.last = self.position[-1]"""
 
     def draw(self, surface):
         for position in self.position[:-1]:
@@ -125,7 +125,7 @@ class Snake(GameObject):
         return self.position[0]
 
     def reset(self):
-        self.length = 2
+        self.length = 1
         self.position = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
         self.direction = choice((RIGHT, LEFT, UP, DOWN))
         screen.fill(BOARD_BACKGROUND_COLOR)
@@ -161,8 +161,6 @@ def main():
         if playable_snake.get_head_position() == game_apple.position:
             playable_snake.length += 1
             game_apple.randomize_position()
-        """if playable_snake.get_head_position() in playable_snake.position[1:]:
-            playable_snake.reset()"""
         playable_snake.draw(screen)
         game_apple.draw(screen)
         pygame.display.update()
