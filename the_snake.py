@@ -7,10 +7,10 @@ pygame.init()
 
 # Константы для размеров поля и сетки:
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
+SCREEN_CENTER = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
 GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
-CENTER = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
 
 # Направления движения:
 UP = (0, -1)
@@ -19,16 +19,16 @@ LEFT = (-1, 0)
 RIGHT = (1, 0)
 
 # Цвет фона - черный:
-BOARD_BACKGROUND_COLOR = (0, 0, 0)
+BOARD_BACKGROUND_COLOR = (255, 255, 255)
 
 # Цвет границы ячейки
 BORDER_COLOR = (93, 216, 228)
 
 # Цвет яблока
-APPLE_COLOR = (255, 0, 0)
+APPLE_COLOR = (200, 30, 30)
 
 # Цвет змейки
-SNAKE_COLOR = (0, 255, 0)
+SNAKE_COLOR = (30, 200, 30)
 
 # Скорость движения змейки:
 SPEED = 3
@@ -51,18 +51,29 @@ class GameObject:
     эти атрибуты описывают позицию и цвет объекта.
     """
 
-    def __init__(self, body_color=(0, 0, 0), position=CENTER):
+    def __init__(self, body_color=(0, 0, 0), position=SCREEN_CENTER):
         self.position = [position]
         self.body_color = body_color
 
-    def draw(self):
+    def draw_cell(self, surface, position):
+        # я не могу назвать метод draw_cell из-за автотестов
         """Заготовка метода для отрисовки объекта на игровом поле"""
+        rect = pygame.Rect(
+            # self.position для яблока или self.positions[0] для змеи
+            position,
+            (GRID_SIZE, GRID_SIZE)
+        )
+        pygame.draw.rect(surface, self.body_color, rect)
+        pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
+
+    def draw(self, surface):
+        """Заглушка для автотестов"""
         pass
 
-    def free_cell(self, surface):
+    def free_cell(self, surface, target_cell):
         """Затирание последнего сегмента"""
         last_rect = pygame.Rect(
-            (self.last[0], self.last[1]),
+            (target_cell[0], target_cell[1]),
             (GRID_SIZE, GRID_SIZE)
         )
         pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
@@ -83,13 +94,8 @@ class Apple(GameObject):
         )
 
     def draw(self, surface):
-        """Отрисовывает яблоко на игровой поверхности"""
-        rect = pygame.Rect(
-            (self.position[0], self.position[1]),
-            (GRID_SIZE, GRID_SIZE)
-        )
-        pygame.draw.rect(surface, self.body_color, rect)
-        pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
+        """Отрисовывает яблоко"""
+        super().draw_cell(surface, self.position)
 
 
 class Snake(GameObject):
@@ -98,7 +104,7 @@ class Snake(GameObject):
     Каждый элемент списка соответствует отдельному сегменту тела змейки
     """
 
-    def __init__(self, body_color=SNAKE_COLOR, position=CENTER):
+    def __init__(self, body_color=SNAKE_COLOR, position=SCREEN_CENTER):
         super().__init__(body_color)
         self.reset()
         self.direction = RIGHT
@@ -128,20 +134,11 @@ class Snake(GameObject):
 
     def draw(self, surface):
         """отрисовывает змейку на экране, затирая след"""
-        for position in self.positions[:-1]:
-            rect = (
-                pygame.Rect((position[0], position[1]),
-                            (GRID_SIZE, GRID_SIZE))
-            )
-            pygame.draw.rect(surface, self.body_color, rect)
-            pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
 # Отрисовка головы змейки
-        head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(surface, self.body_color, head_rect)
-        pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+        super().draw_cell(surface, self.positions[0])
 # Затирание последнего сегмента
         if self.last:
-            self.free_cell(surface)
+            self.free_cell(surface, self.last)
 
     def get_head_position(self):
         """Возвращает позицию головы змейки"""
@@ -150,7 +147,7 @@ class Snake(GameObject):
     def reset(self):
         """Сбрасывает змейку в начальное состояние"""
         self.length = 1
-        self.positions = [CENTER]
+        self.positions = [SCREEN_CENTER]
         self.direction = choice((RIGHT, LEFT, UP, DOWN))
         screen.fill(BOARD_BACKGROUND_COLOR)
 
