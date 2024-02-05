@@ -56,10 +56,8 @@ class GameObject:
         self.body_color = body_color
 
     def draw_cell(self, surface, position):
-        # я не могу назвать метод draw_cell из-за автотестов
         """Заготовка метода для отрисовки объекта на игровом поле"""
         rect = pygame.Rect(
-            # self.position для яблока или self.positions[0] для змеи
             position,
             (GRID_SIZE, GRID_SIZE)
         )
@@ -73,7 +71,7 @@ class GameObject:
     def free_cell(self, surface, target_cell):
         """Затирание последнего сегмента"""
         last_rect = pygame.Rect(
-            (target_cell[0], target_cell[1]),
+            target_cell,
             (GRID_SIZE, GRID_SIZE)
         )
         pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, last_rect)
@@ -95,7 +93,7 @@ class Apple(GameObject):
 
     def draw(self, surface):
         """Отрисовывает яблоко"""
-        super().draw_cell(surface, self.position)
+        self.draw_cell(surface, self.position)
 
 
 class Snake(GameObject):
@@ -134,9 +132,9 @@ class Snake(GameObject):
 
     def draw(self, surface):
         """отрисовывает змейку на экране, затирая след"""
-# Отрисовка головы змейки
-        super().draw_cell(surface, self.positions[0])
-# Затирание последнего сегмента
+        # Отрисовка головы змейки
+        self.draw_cell(surface, self.positions[0])
+        # Затирание последнего сегмента
         if self.last:
             self.free_cell(surface, self.last)
 
